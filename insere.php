@@ -4,7 +4,7 @@
    
        error_log("entrou");
         if(isset($_POST["control"])){
-            /*Valida se o usuario digitou vazio*/
+            /*Valida se o usuario digitou vazio!*/
            if (isset($_POST['submit'])) {
             $sLogin =($_POST['login']);
             $sPass = ($_POST['senha']);

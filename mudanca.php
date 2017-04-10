@@ -18,8 +18,7 @@ require("bancoDados.php");
                }
                 else {header("Location: http://localhost/mudanca.php?idn=$ide");}
             }
-        
-if(isset($_GET['idn'])){
+     if(isset($_GET['idn'])){
 
    $pessoa=bancoDados::imprimi($_GET['idn']);
      $pessoa=$pessoa[0];

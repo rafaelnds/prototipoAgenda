@@ -1,6 +1,5 @@
 <?php
      class bancoDados {
-         
         /*Conecta ao Banco de Dados*/
         public static function fazConexao(){
             $connect = new PDO("odbc:Driver={ODBC Driver 11 for SQL Server};Server=localhost\sqlexpress,59783;Database=CADASTRO;Uid=rafael;Pwd=rafael123");
@@ -363,13 +362,14 @@
         /*Filtro de pessoa*/
         function buscaPessoa( $varnomep=0, $varid=0, $vartel=0,$varemail=0) {
                $conn= bancoDados::fazConexao();
-               echo "<table><tr><th></th><th>ID</th><th>Nome</th><th>Telefone</th><th>Nome fantasia</th><th>Razao Social</th><th>EMAIL</th><th>Estado Civil</th><th>CPF</th><th>RG</th><th>CNPJ</th></tr>";
+               echo "<table  border='3'><tr><th></th><th>ID</th><th>Nome</th><th>Telefone</th><th>Nome fantasia</th><th>Razao Social</th><th>EMAIL</th><th>Estado Civil</th><th>CPF</th><th>RG</th><th>CNPJ</th></tr>";
                 try{
                   
                 if($varid){
                    $busca= bancoDados::imprimi($varid);
                     $id=$varid;
                     $nome = $busca[0]['NOME'];
+                    if($nome!=""){
                     $ec=$busca[0]['DESCRICAO'];
                     $telefone = $busca[0]['TELEFONE'];
                     $empresa = $busca[0]['NOME_FANTASIA'];
@@ -379,6 +379,12 @@
                     $rg = $busca[0]['RG'];
                     $cnpj = $busca[0]['CNPJ'];
                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td>$telefone</td><td>$empresa</td><td>$razao</td><td>$email</td><td>$ec</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
+                    }
+                    else{
+                        echo '<script language="javascript">';
+                         echo 'alert("*Pessoa Inexistente")';
+                         echo '</script>';
+                    }
                 }
                
                 else if($vartel){
@@ -390,6 +396,7 @@
                     $id = $arr[0]['ID'];
                     $busca= bancoDados::imprimi($id);
                     $nome = $busca[0]['NOME'];
+                    if($nome!=""){
                     $ec=$busca[0]['DESCRICAO'];
                     $telefone = $vartel;
                     $empresa = $busca[0]['NOME_FANTASIA'];
@@ -399,6 +406,12 @@
                     $rg = $busca[0]['RG'];
                     $cnpj = $busca[0]['CNPJ'];
                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td>$telefone</td><td>$empresa</td><td>$razao</td><td>$email</td><td>$ec</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
+                    }
+                    else{
+                        echo '<script language="javascript">';
+                         echo 'alert("*Pessoa Inexistente")';
+                         echo '</script>';
+                    } 
                 }
                 else if($varemail){
                     $num_rows ="SELECT ID FROM dbo.PESSOA WHERE EMAIL='".$varemail."'";
@@ -408,6 +421,7 @@
                     $id = $arr[0]['ID'];
                     $busca= bancoDados::imprimi($id);
                     $nome = $busca[0]['NOME'];
+                    if($nome!=""){
                     $ec=$busca[0]['DESCRICAO'];
                     $telefone = $busca[0]['TELEFONE'];
                     $empresa = $busca[0]['NOME_FANTASIA'];
@@ -417,26 +431,41 @@
                     $rg = $busca[0]['RG'];
                     $cnpj = $busca[0]['CNPJ'];
                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td>$telefone</td><td>$empresa</td><td>$razao</td><td>$email</td><td>$ec</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
+                    }
+                    else{
+                        echo '<script language="javascript">';
+                         echo 'alert("*Pessoa Inexistente")';
+                         echo '</script>';
+                    } 
                 }
                 else{
                     $num_rows ="SELECT ID FROM dbo.PESSOA WHERE NOME='".$varnomep."'";
                     $stmt = $conn->prepare($num_rows); 
                     $stmt->execute(); 
                     $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    $id = $arr[0]['ID'];
-                    $busca= bancoDados::imprimi($id);
                     for($i=0;$i<count($arr);$i++){
+                    $id = $arr[$i]['ID'];
+                    if($id!=""){
+                    $busca= bancoDados::imprimi($id);
                     $nome =$varnomep;
-                    $ec=$busca[$i]['DESCRICAO'];
-                    $telefone = $busca[$i]['TELEFONE'];
-                    $empresa = $busca[$i]['NOME_FANTASIA'];
-                    $razao = $busca[$i]['RAZAO_SOCIAL'];
-                    $email =  $busca[$i]['EMAIL'];
-                    $cpf = $busca[$i]['CPF'];
-                    $rg = $busca[$i]['RG'];
-                    $cnpj = $busca[$i]['CNPJ'];
+                    $ec=$busca[0]['DESCRICAO'];
+                    $telefone = $busca[0]['TELEFONE'];
+                    $empresa = $busca[0]['NOME_FANTASIA'];
+                    $razao = $busca[0]['RAZAO_SOCIAL'];
+                    $email =  $busca[0]['EMAIL'];
+                    $cpf = $busca[0]['CPF'];
+                    $rg = $busca[0]['RG'];
+                    $cnpj = $busca[0]['CNPJ'];
                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td>$telefone</td><td>$empresa</td><td>$razao</td><td>$email</td><td>$ec</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
-                }}
+                    }
+                     else{
+                        echo '<script language="javascript">';
+                         echo 'alert("*Pessoa Inexistente")';
+                         echo '</script>';
+                    }
+                    }
+                  
+                    }
                 echo '</table>';
             }
                catch(Exception $e){
@@ -452,36 +481,58 @@
                  try{
                     
                     if($nomeuser){
-                    $num_rows ="SELECT ID,LOGIN,SENHA FROM dbo.USUARIO WHERE NOME='".$nomeuser."'";
+                    $num_rows ="SELECT ID FROM dbo.USUARIO WHERE NOME='".$nomeuser."'";
                     $stmt = $conn->prepare($num_rows); 
                     $stmt->execute(); 
                     $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                     for($i=0;$i<count($arr);$i++){
-                    $senha = $arr[$i]['SENHA'];
-                    $nome = $nomeuser;
+                    
+                    for($i=0;$i<count($arr);$i++){
                     $id = $arr[$i]['ID'];
-                    $login = $arr[$i]['LOGIN'];
+                    error_log($id);
+                     if($id!=""){
+                    $busca= bancoDados::imprimiUser($id);
+                    $senha = $busca[0]['SENHA'];
+                    $nome = $nomeuser;
+                    $login = $busca[0]['LOGIN'];
                     echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td> $login </td><td>$senha</td></tr>";
                      }
-                } else if($log){
+                       else {
+                       echo '<script language="javascript">';
+                            echo 'alert("*Usuário Inexistente")';
+                            echo '</script>';
+                   }
+                     }
+                  
+                 } 
+                    else if($log){
                     $num_rows ="SELECT NOME,ID,SENHA FROM dbo.USUARIO WHERE LOGIN='".$log."'";
                     $stmt = $conn->prepare($num_rows); 
                     $stmt->execute(); 
                     $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     $login = $log;
                     $id = $arr[0]['ID'];
+                    if($id!=""){
                     $nome = $arr[0]['NOME'];
                     $senha = $arr[0]['SENHA'];
                     echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td> $login </td><td>$senha</td></tr>";
-                }
+                }  else {
+                    echo '<script language="javascript">';
+                         echo 'alert("*Usuário Inexistente")';
+                         echo '</script>';
+                }}
                 else {
                     $arr=  bancoDados::imprimiUser($idu);
                     $id =$idu;
                     $nome = $arr[0]['NOME'];
+                    if($nome!=""){
                     $login = $arr[0]['LOGIN'];
                     $senha = $arr[0]['SENHA'];
                     echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td> $login </td><td>$senha</td></tr>";
-                }
+                }else{
+                   echo '<script language="javascript">';
+                         echo 'alert("*Usuário Inexistente")';
+                         echo '</script>'; 
+                }}
              } catch(Exception $e){
                    die( print_r( $e->getMessage() ) );   
                 }

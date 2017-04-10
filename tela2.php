@@ -8,7 +8,6 @@
        unset($_SESSION['login']);
        unset($_SESSION['senha']);
        header('location:login.php');
-       
     }  
     else{
         $logado = $_SESSION['login'];
@@ -26,7 +25,7 @@
             }
             else{
                 bancoDados::buscaPessoa($_POST['namep'], $_POST['idp'], $_POST['telefone'],$_POST['email']);
-                echo "<table>";
+                echo "<table >";
                 echo '<form action="tela2.php" method="post">';
                 echo "<tr><td><input type='submit' value='Mostrar Pessoas' ></td></tr>";
                 echo'</form>';

@@ -6,7 +6,6 @@ require("bancoDados.php");
        unset($_SESSION['login']);
        unset($_SESSION['senha']);
        header('location:login.php');
-        
     }  
     else{
         
@@ -24,7 +23,7 @@ require("bancoDados.php");
                else {header("Location: http://localhost/mudancaUsuario.php?idn=$ide&erro=err");}
     }
             else {
-                   echo "<span style='color:red'>*Espaço em branco Inválido!</span>";
+                   echo "<span style='color:red'>*Espaï¿½o em branco Invï¿½lido!</span>";
                   $usuario=bancoDados::imprimiUser($ide);
                   $usuario=$usuario[0];}}
     }
