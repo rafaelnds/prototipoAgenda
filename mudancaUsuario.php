@@ -54,6 +54,7 @@ if(isset($_GET["erro"])){
     <style>
     .error {color: #FF0000;}
     </style>
+    <h1>Mudança de Dados</h1>
     </head>  
     <form method = "post" action="mudancaUsuario.php" >
     <input type="hidden" value="1" name="contr">

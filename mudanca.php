@@ -32,6 +32,7 @@ require("bancoDados.php");
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" type="text/javascript"></script>
       <script src="jquery.maskedinput.js" type="text/javascript"></script>
     <form method = "post" action="mudanca.php" >
+        <h1>Mudança de Dados</h1>
     <input type="hidden" value="1" name="contr">
     <input type="hidden" value="<?php echo $_GET['idn']?>"  name="idEntidade">
     <body>
