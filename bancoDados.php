@@ -450,20 +450,22 @@
                     $stmt = $conn->prepare($num_rows); 
                     $stmt->execute(); 
                     $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    error_log(print_r($arr,true));
                     if(count($arr)>0){
                     for($i=0;$i<count($arr);$i++){
                     $id = $arr[$i]['ID'];
-                    if($id==""){
+                    error_log($id);
+                    if($id!=""){
                     $busca= bancoDados::imprimi($id);
                     $nome =$varnomep;
-                    $ec=$busca[0]['DESCRICAO'];
-                    $telefone = $busca[0]['TELEFONE'];
-                    $empresa = $busca[0]['NOME_FANTASIA'];
-                    $razao = $busca[0]['RAZAO_SOCIAL'];
-                    $email =  $busca[0]['EMAIL'];
-                    $cpf = $busca[0]['CPF'];
-                    $rg = $busca[0]['RG'];
-                    $cnpj = $busca[0]['CNPJ'];
+                    $ec=$busca[$i]['DESCRICAO'];
+                    $telefone = $busca[$i]['TELEFONE'];
+                    $empresa = $busca[$i]['NOME_FANTASIA'];
+                    $razao = $busca[$i]['RAZAO_SOCIAL'];
+                    $email =  $busca[$i]['EMAIL'];
+                    $cpf = $busca[$i]['CPF'];
+                    $rg = $busca[$i]['RG'];
+                    $cnpj = $busca[$i]['CNPJ'];
                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td>$telefone</td><td>$empresa</td><td>$razao</td><td>$email</td><td>$ec</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
                     }}
                      
