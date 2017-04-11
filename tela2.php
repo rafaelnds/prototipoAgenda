@@ -34,6 +34,7 @@
             } 
         /*Ativa Excluir*/
           else if(isset($_POST['exclui'])){
+                
                 if(!empty($_POST["boxpes"])){
                 
                 $tipo="pes";
@@ -47,9 +48,16 @@
                  
             }
            else{
-             
-            
-            header("Location: http://localhost/tela2.php");
+               if($_POST['exclui']=="Excluir Usuário"){
+                echo '<script language="javascript">';
+                echo"document.location.href='http://localhost/tela2.php?type=us';";
+                echo 'alert("*Selecione a fileira a ser excluida!")';
+               echo '</script>';}
+               else{
+                echo '<script language="javascript">';
+                echo"document.location.href='http://localhost/tela2.php';";
+                echo 'alert("*Selecione a fileira a ser excluida!")';
+                echo '</script>';}
             }
 
        }
@@ -73,7 +81,7 @@
        }
 
         echo "</table>";   
-        echo "<input type='submit'  name='exclui' value='Excluir Dados'  >";
+        echo "<input type='submit'  name='exclui' value='Excluir Usuário'   >";
         echo '</form>';
         echo "<table>";
         echo '<form action="tela2.php" method="post">';

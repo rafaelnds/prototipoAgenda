@@ -98,10 +98,10 @@
 <html>
    <head>
        
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" type="text/javascript"></script>
-      <script src="jquery.maskedinput.js" type="text/javascript"></script>
-      <script type="text/javascript">
- 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" type="text/javascript"></script>
+  <script src="jquery.maskedinput.js" type="text/javascript"></script>
+  <script type="text/javascript">
+
                  
     function myFunction() {
     switch( document.getElementById("pessoa").value ){
@@ -115,12 +115,10 @@
     break;
         default:document.getElementById("pessoaj").style.display = "none";
         document.getElementById("pessoaf").style.display = "none";
+        break;
     }
     }
-   
-       
-             
-  
+
 </script>
 <style>
 .error {color: #FF0000;}

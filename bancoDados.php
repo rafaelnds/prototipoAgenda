@@ -317,6 +317,7 @@
         /*Exclui dados*/
         function exclui($t,$vetor)/*ALERT*/{
             $conn= bancoDados::fazConexao();
+             
             try {
                 if($t=="pes"){
                 for($i=0;$i<count($vetor);$i++){  
@@ -339,9 +340,7 @@
                 $del=$conn->prepare($num_rows4);  
                 $del->execute();
                 }
-                echo '<script language="javascript">';
-                echo 'alert ("Remoção feita com sucesso!")';
-                echo '</script>'; 
+                
                 }
                 else{
                 error_log("entrou US");
@@ -353,7 +352,10 @@
                 $t="us";
                 }
                 }
-                header("Location: http://localhost/tela2.php?type=$t");
+                 echo '<script language="javascript">';
+                 echo"document.location.href='http://localhost/tela2.php?type=$t';";
+                echo 'alert ("Remoção feita com sucesso!")';
+                echo '</script>';
             } catch (Exception $e){
                    die( print_r( $e->getMessage() ) );   
                 }
@@ -370,6 +372,7 @@
                     $id=$varid;
                     $nome = $busca[0]['NOME'];
                     if($nome!=""){
+                      
                     $ec=$busca[0]['DESCRICAO'];
                     $telefone = $busca[0]['TELEFONE'];
                     $empresa = $busca[0]['NOME_FANTASIA'];
@@ -381,9 +384,11 @@
                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td>$telefone</td><td>$empresa</td><td>$razao</td><td>$email</td><td>$ec</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
                     }
                     else{
-                        echo '<script language="javascript">';
-                         echo 'alert("*Pessoa Inexistente")';
-                         echo '</script>';
+                       echo '<script language="javascript">';
+                       echo"document.location.href='http://localhost/tela2.php';";
+                       echo 'alert("*Pessoa Inexistente")';
+                       echo '</script>';
+                    
                     }
                 }
                
@@ -396,7 +401,7 @@
                     $id = $arr[0]['ID'];
                     $busca= bancoDados::imprimi($id);
                     $nome = $busca[0]['NOME'];
-                    if($nome!=""){
+                    if($id!=""){
                     $ec=$busca[0]['DESCRICAO'];
                     $telefone = $vartel;
                     $empresa = $busca[0]['NOME_FANTASIA'];
@@ -409,8 +414,9 @@
                     }
                     else{
                         echo '<script language="javascript">';
-                         echo 'alert("*Pessoa Inexistente")';
-                         echo '</script>';
+                        echo"document.location.href='http://localhost/tela2.php';";
+                        echo 'alert("*Pessoa Inexistente")';
+                        echo '</script>';
                     } 
                 }
                 else if($varemail){
@@ -421,7 +427,7 @@
                     $id = $arr[0]['ID'];
                     $busca= bancoDados::imprimi($id);
                     $nome = $busca[0]['NOME'];
-                    if($nome!=""){
+                    if($id!=""){
                     $ec=$busca[0]['DESCRICAO'];
                     $telefone = $busca[0]['TELEFONE'];
                     $empresa = $busca[0]['NOME_FANTASIA'];
@@ -434,8 +440,9 @@
                     }
                     else{
                         echo '<script language="javascript">';
-                         echo 'alert("*Pessoa Inexistente")';
-                         echo '</script>';
+                        echo"document.location.href='http://localhost/tela2.php';";
+                        echo 'alert("*Pessoa Inexistente")';
+                        echo '</script>';
                     } 
                 }
                 else{
@@ -443,9 +450,10 @@
                     $stmt = $conn->prepare($num_rows); 
                     $stmt->execute(); 
                     $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    if(count($arr)>0){
                     for($i=0;$i<count($arr);$i++){
                     $id = $arr[$i]['ID'];
-                    if($id!=""){
+                    if($id==""){
                     $busca= bancoDados::imprimi($id);
                     $nome =$varnomep;
                     $ec=$busca[0]['DESCRICAO'];
@@ -457,12 +465,13 @@
                     $rg = $busca[0]['RG'];
                     $cnpj = $busca[0]['CNPJ'];
                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td>$telefone</td><td>$empresa</td><td>$razao</td><td>$email</td><td>$ec</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
-                    }
-                     else{
+                    }}
+                     
+                    }else{
                         echo '<script language="javascript">';
-                         echo 'alert("*Pessoa Inexistente")';
-                         echo '</script>';
-                    }
+                        echo"document.location.href='http://localhost/tela2.php';";
+                        echo 'alert("*Pessoa Inexistente")';
+                        echo '</script>';
                     }
                   
                     }
@@ -476,7 +485,7 @@
         /*Filtro de usuarios*/
         function buscaUser($nomeuser=0,$log=0,$idu=0){
                  $conn= bancoDados::fazConexao();
-                  echo "<table><tr><th></th><th>ID</th><th>Nome</th><th>Login</th><th>Senha</th></tr>";  
+                  echo "<table  border='3'><tr><th></th><th>ID</th><th>Nome</th><th>Login</th><th>Senha</th></tr>";  
                    
                  try{
                     
@@ -485,23 +494,28 @@
                     $stmt = $conn->prepare($num_rows); 
                     $stmt->execute(); 
                     $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    
+                    error_log( print_r($arr, TRUE));
+                    if(count($arr)>0){
                     for($i=0;$i<count($arr);$i++){
+                     
                     $id = $arr[$i]['ID'];
                     error_log($id);
                      if($id!=""){
+                            
                     $busca= bancoDados::imprimiUser($id);
                     $senha = $busca[0]['SENHA'];
                     $nome = $nomeuser;
                     $login = $busca[0]['LOGIN'];
                     echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td> $login </td><td>$senha</td></tr>";
                      }
-                       else {
-                       echo '<script language="javascript">';
-                            echo 'alert("*Usuário Inexistente")';
-                            echo '</script>';
-                   }
-                     }
+                      
+                    }
+                     }else{
+                      error_log("entrou else!!");
+                        echo '<script language="javascript">';
+                        echo"document.location.href='http://localhost/tela2.php?type=us';";
+                        echo 'alert("*Usuário Inexistente")';
+                        echo '</script>';}
                   
                  } 
                     else if($log){
@@ -516,9 +530,10 @@
                     $senha = $arr[0]['SENHA'];
                     echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td> $login </td><td>$senha</td></tr>";
                 }  else {
-                    echo '<script language="javascript">';
-                         echo 'alert("*Usuário Inexistente")';
-                         echo '</script>';
+                        echo '<script language="javascript">';
+                        echo"document.location.href='http://localhost/tela2.php?type=us';";
+                        echo 'alert("*Usuário Inexistente")';
+                        echo '</script>';
                 }}
                 else {
                     $arr=  bancoDados::imprimiUser($idu);
@@ -529,9 +544,10 @@
                     $senha = $arr[0]['SENHA'];
                     echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes'onclick='getVcheck' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&tipo=p'>$id</a></td><td>$nome</td><td> $login </td><td>$senha</td></tr>";
                 }else{
-                   echo '<script language="javascript">';
-                         echo 'alert("*Usuário Inexistente")';
-                         echo '</script>'; 
+                        echo '<script language="javascript">';
+                        echo"document.location.href='http://localhost/tela2.php?type=us';";
+                        echo 'alert("*Usuário Inexistente")';
+                        echo '</script>'; 
                 }}
              } catch(Exception $e){
                    die( print_r( $e->getMessage() ) );   
@@ -595,4 +611,3 @@
           
      }       
 ?>
- 

@@ -78,7 +78,7 @@ if(isset($_GET["erro"])){
             <tr>
                 <td>
                   <input type = "submit" name = "submit" value = "Salvar" > 
-                  <input type=button onClick="parent.location='http://localhost/tela2.php'" value='Voltar' >
+                  <input type=button onClick="parent.location='http://localhost/tela2.php?type=us'" value='Voltar' >
                 </td>
                 </tr>
             </table>
