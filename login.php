@@ -23,7 +23,7 @@
             </tr>
              <tr>
                <td>Senha:</td>
-               <td> <input type = "text" name = "password">
+               <td> <input type = "password" name = "password">
                   <span class = "error">
                </td>
             </tr>

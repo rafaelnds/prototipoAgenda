@@ -11,7 +11,7 @@ require("bancoDados.php");
         
     if(isset($_POST['contr'])){
         $ide=$_POST["idEntidade"];
-        error_log($ide);
+        
             if($_POST['newlogin']!="" && $_POST['newsenha']!=""){
                 
              $ver= bancoDados::validaUsuario($ide,$_POST['newlogin']);
@@ -23,9 +23,13 @@ require("bancoDados.php");
                else {header("Location: http://localhost/mudancaUsuario.php?idn=$ide&erro=err");}
     }
             else {
-                   echo "<span style='color:red'>*Espa�o em branco Inv�lido!</span>";
-                  $usuario=bancoDados::imprimiUser($ide);
-                  $usuario=$usuario[0];}}
+                echo '<script language="javascript">';
+                echo"document.location.href='http://localhost/mudancaUsuario.php?idn=$ide';";
+                echo 'alert ("Espaço em branco Inválido!")';
+                echo '</script>';
+                   
+            }}
+                 
     }
              
                
@@ -68,7 +72,7 @@ if(isset($_GET["erro"])){
                 </tr>
                 <tr> 
                   <td>Senha:</td> 
-                    <td> <input type = 'text' name = 'newsenha' value='<?php echo $usuario['SENHA'];?>' > 
+                    <td> <input type = 'password' name = 'newsenha' value='<?php echo $usuario['SENHA'];?>' > 
                     </td> 
                 </tr>
                  

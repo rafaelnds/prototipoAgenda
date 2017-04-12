@@ -78,15 +78,15 @@
             </tr>
              <tr>
                <td>Senha:</td>
-               <td> <input type = "text" name = "senha" value="<?php echo $sPass;?>">
-                  <span class = "error"><?php echo $passErr;?></span>
+               <td> <input type = "password" name = "senha" value="<?php echo $sPass;?>">
+                  <span class = "error"><?php echo $pasErr;?></span>
                </td>
             </tr>
         </table>
         <table>
 		<tr>
                <td>
-                  <input type = "submit" name = "submit" value = "Submit" > 
+                  <input type = "submit" name = "submit" value = "Salvar" > 
                   <input type=button onClick="parent.location='http://localhost/tela2.php'" value='Voltar' >
                </td>
             </tr>

@@ -97,7 +97,7 @@
         else {
             echo '<form method="post">';
             echo'<h1>Tabela de Pessoas Cadastradas</h1>';
-            echo "<table border='3'><tr><th></th><th>ID</th><th>Nome</th><th>Telefone</th><th>Nome fantasia</th><th>Razao Social</th><th>EMAIL</th><th>Estado Civil</th><th>CPF</th><th>RG</th><th>CNPJ</th></tr>";
+            echo "<table border='3'><tr><th></th><th>ID</th><th>Nome</th><th>Telefone</th><th>EMAIL</th><th>Estado Civil</th><th>Nome fantasia</th><th>Razao Social</th><th>CPF</th><th>RG</th><th>CNPJ</th></tr>";
             $array=bancoDados::imprimi();
              for($i=0;$i<count($array); $i++){
                 error_log($array[$i]['ID']);
@@ -111,7 +111,9 @@
                 $cpf = $array[$i]['CPF'];
                 $rg = $array[$i]['RG'];
                 $cnpj = $array[$i]['CNPJ'];
-           echo "<tr><td><input type='checkbox' id='box' name='boxpes[]' value='$id '></td><td><a href='http://localhost/mudanca.php?idn=$id'>$id</a></td><td>$pnome</td><td>$telefone</td><td>$empresa</td><td>$razao</td><td>$email</td><td>$ec</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
+                if(isset($cnpj)){$tpes="pj";}
+                else{$tpes="pf";}
+           echo "<tr><td><input type='checkbox' id='box' name='boxpes[]' value='$id '></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=$tpes'>$id</a></td><td>$pnome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
           
         }  
         
@@ -137,10 +139,10 @@
         <table>
             <tr>
                 <td>
-                    <input type = "button" name = "ins" onclick="parent.location='http://localhost/inserePessoa.php'" value = "Iserir novo Cadastro de pessoa" > 
+                    <input type = "button" name = "ins" onclick="parent.location='http://localhost/inserePessoa.php'" value = "Inserir novo Cadastro de pessoa" > 
                 </td>
                 <td>
-                    <input type = "button" name = "ins" onclick="parent.location='http://localhost/insere.php'" value = "Iserir novo Cadastro de usuario" > 
+                    <input type = "button" name = "ins" onclick="parent.location='http://localhost/insere.php'" value = "Inserir novo Cadastro de usuario" > 
                 </td>
             </tr> 
         </table>

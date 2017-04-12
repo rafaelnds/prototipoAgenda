@@ -23,76 +23,60 @@
             $rgErr = $emailErr = $cpfErr = $cnpjErr =$rsErr = $empresaErr = $emailErr = $nameErr="";
             /*Valida se o usuario digitou vazio*/
             if($sName!=""){
-            if(isset($sEc)){
-            if ($sEmail!="" && filter_var($sEmail, FILTER_VALIDATE_EMAIL) == true){
-             if ($sTelefone!="") {
-              if ($sEmpresa!=""){
-                  if($sRs!=""){
-                      error_log("entrou no if");
-                      /*Valida RG e CPF/CNPJ vazio*/
-                      if($_POST['pessoa']=="pf"){
-                        if($sCpf!=""){ 
-                            error_log('entrou pessoa cpf');
-                             if($sRg!=""){
-                                $var=bancoDados:: validaDoc($sCpf,$sRg);
-                                if($var==true){
-                                    $var2=bancoDados:: validaPessoa($sTelefone,$sEmail);
-                                    error_log($var2);
-                                    if($var2==true){
+                if(isset($sEc)){
+                    if ($sEmail!="" && filter_var($sEmail, FILTER_VALIDATE_EMAIL) == true){
+                        if ($sTelefone!="") {
+                            if($_POST['pessoa']=="pf"){
+			        if($sCpf!=""){ 
+                                    if($sRg!=""){
+                                        $var=bancoDados:: validaDoc($sCpf,$sRg);
+                               		if($var==true){
+                                             $var2=bancoDados:: validaPessoa($sTelefone,$sEmail);
+                                             if($var2==true){
+                                               
+                                                bancoDados::inserePessoa();
+                                                header("Location: http://localhost/tela2.php");
+	                                    }
+                             		}		
+				    }else{
+				        $rgErr="*RG Inválido";}
+			        }else{
+			            $cpfErr="*CPF Inválido";}
+	                  			
+                            }
+                            else{error_log('entrou pessoa j');
+                                if($sEmpresa!=""){
+                                  if($sRs!=""){
+                                      if($sCnpj==""){
+                                         $cnpjErr="*CNPJ Inválido";
+                                    }
+                                    else {
+                                        $var2=bancoDados:: validaPessoa($sTelefone,$sEmail);
+                                        if($var2==true){
                                         /*Insere*/
                                        bancoDados::inserePessoa();
                                        header("Location: http://localhost/tela2.php");
+                                        }
                                     }
-                                }
-                            }else{
-                                $rgErr="*RG Inválido";
-                                }
-                        }
-                          else{
-                               $cpfErr="*CPF Inválido";
-                            }
-                      }
-                      else{error_log('entrou pessoa j');
-                        if($sCnpj==""){
-                           $cnpjErr="*CNPJ Inválido";
-                      }
-                        else {
-                            $var2=bancoDados:: validaPessoa($sTelefone,$sEmail);
-                            if($var2==true){
-                            /*Insere*/
-                           bancoDados::inserePessoa();
-                           header("Location: http://localhost/tela2.php");
-                        }
-                        }
-                        }
+                                  }else {
+                                    $rsErr = '*Razão Social Inválida';}
+                                }else {
+                                     $empresaErr = '*Nome Fantasia Inválido'; }
   
-                }else {/*Imprimi erros*/
-                $rsErr = '*Razão Social Inválida';
-                 
-                }
-                       
+                            }         
+                        }else {
+                        $telErr = '*Telefone Inválido';
+                        }
+                    }else {
+                      $emailErr = '*Email Inválido';}
                 }else {
-                $empresaErr = '*Nome Fantasia Inválido';
-                }
-                }else {
-                $telErr = '*Telefone Inválido';
-                }
-                 
-            } else {
-                $emailErr = '*Email Inválido';
-                 
-              }
-              } else {
-                   $emailErr = '*Estado Civil Inválido';
-                                     
-              
-        }}  else{ 
-                  $nameErr="*Nome Inválido";
-                    }     
+                   $emailErr = '*Estado Civil Inválido';}
+            }else{ 
+                $nameErr="*Nome Inválido"; }     
         }}}
          
           
-     
+     $tipo=$_POST["pessoa"];
          
        ?>
 <html>
@@ -117,6 +101,7 @@
         document.getElementById("pessoaf").style.display = "none";
         break;
     }
+    
     }
 
 </script>
@@ -162,8 +147,12 @@
                         for($i=0;$i<count($arr);$i++){
                 $ide=$arr[$i]['ID'];
                 $desc=$arr[$i]['DESCRICAO'];
-                 
-                            echo"<option value = $ide>$desc</option>";
+                 if($ide==$sEc){
+                     echo"<option selected value = $ide>$desc</option>";
+                 }
+                 else{
+                    echo"<option value = $ide>$desc</option>";}
+                  
                         }   echo "</td></tr></select>";
  
                  
@@ -171,8 +160,7 @@
                 catch(Exception $e){
                         die(print_r($e->getMessage()));   
                         }
-         
-         
+                        
              
             ?>
     <tr>
@@ -182,27 +170,27 @@
                </td>
             </tr>
              
-            <tr>
-               <td>Nome fantasia:</td>
-               <td> <input type = "text" name = "empresa" id="empresa" value="<?php echo $sEmpresa;?>" >
-                  <span class = "error"><?php echo $empresaErr;?></span>
-               </td>
-            </tr>
-            <tr>
-               <td>Razão Social:</td>
-                <td> <input type = "text" name = "razaosocial" id="razaosocial" value="<?php echo $sRs;?>">
-                  <span class = "error"><?php echo $rsErr;?></span>
-               </td>
-            </tr>
-        <tr>
+           
                 
-               <td>
-                  <select name="pessoa" id="pessoa" onchange="javascript:myFunction();">
-                     <option>Selecione</option>
-                      <option value = "pf">Pessoa Física</option>
-                     <option value = "pj">Pessoa Jurídica</option>
-                  </select>
-             
+               <?php
+                  echo "<tr><td>Tipo de Pessoa:</td>";
+                        echo "<td><select name='pessoa' id='pessoa' onchange='javascript:myFunction();' >";
+                           
+                            
+                            if($tipo=="pf"){
+                                echo"<option selected value = 'pf'>Pessoa Física</option>";
+                                echo"<option  value = 'pj'>Pessoa Jurídica</option>";
+                            }
+                            else if($tipo=="pj"){
+                                echo"<option selected value = 'pj'>Pessoa Jurídica</option>";
+				echo"<option  value = 'pf'>Pessoa Física</option>";
+                            }
+                            else{ echo"<option>Selecione</option>";
+                           echo"<option  value = 'pf'>Pessoa Física</option>";
+                           echo"<option  value = 'pj'>Pessoa Jurídica</option>";}
+                           echo "</td></tr></select>";
+                           error_log($_POST["pessoa"]);
+             ?>
                  
                </td>
             </tr>
@@ -212,6 +200,19 @@
                                 <td> <input type = 'text' name = 'cnpj' id='cnpj' value='cnpj' > 
                                 <span class = 'error'><?php echo $cnpjErr;?></span></td>
                             </tr>
+                             <tr>
+                           <td>Nome fantasia:</td>
+                           <td> <input type = "text" name = "empresa" id="empresa" value="<?php echo $sEmpresa;?>" >
+                              <span class = "error"><?php echo $empresaErr;?></span>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td>Razão Social:</td>
+                            <td> <input type = "text" name = "razaosocial" id="razaosocial" value="<?php echo $sRs;?>">
+                              <span class = "error"><?php echo $rsErr;?></span>
+                           </td>
+                        </tr>
+        <tr>
             </table>
             <table id="pessoaf">
                             <tr>
@@ -229,7 +230,7 @@
              
             <tr>
                <td>
-                  <input type = "submit" name = "submit" value = "Submit" > 
+                  <input type = "submit" name = "submit" value = "Salvar" > 
                   <input type=button onClick="parent.location='http://localhost/tela2.php'" value='Voltar' >
                </td>
             </tr>
@@ -245,8 +246,19 @@
            $("#cnpj").mask("99.999.999/9999-99"); 
         });
              
-   document.getElementById("pessoaj").style.display = "none";
+        switch( document.getElementById("pessoa").value ){
+    case "pj":
+            document.getElementById("pessoaj").style.display = "block";
+            document.getElementById("pessoaf").style.display = "none";
+    break;
+    case "pf":
+        document.getElementById("pessoaj").style.display = "none";
+        document.getElementById("pessoaf").style.display = "block";
+    break;
+        default:document.getElementById("pessoaj").style.display = "none";
         document.getElementById("pessoaf").style.display = "none";
+        break;
+    }
 </script>
    </body>
 </html>
