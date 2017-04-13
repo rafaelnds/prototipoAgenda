@@ -12,9 +12,16 @@ require("bancoDados.php");
         $ide=$_POST["idEntidade"];
         
         if($_GET['tp']=="pf" || $_POST['tiPes']=="pf"){
-            if($_POST['newtel']!=""){
-                if($_POST['newemail']!=""){
-                    $ver= bancoDados::validaMudanca("pf",$ide,$_POST['newtel'],$_POST['newemail']);
+            if($_POST['nome']!=""){
+             if($_POST['cpf']!=""){
+              if($_POST['rg']!=""){
+               if($_POST['newtelf']!=""){
+                if($_POST['newemailf']!=""){
+                     $telfone=$_POST['newtelf'];
+                     $email=$_POST['newemailf'];
+                    $ver1= bancoDados::validaDoc($_POST['cpf'],$_POST['rg'],$ide,"muda");
+                    if($ver1==true){
+                    $ver= bancoDados::validaMudanca("pf",$ide,$_POST['newtelf'],$_POST['newemailf']);}
                 }else{
                     echo '<script language="javascript">';
                     echo"document.location.href='http://localhost/mudanca.php?idn=$ide&&tp=pf';";
@@ -25,8 +32,22 @@ require("bancoDados.php");
                     echo '<script language="javascript">';
                     echo"document.location.href='http://localhost/mudanca.php?idn=$ide&&tp=pf';";
                     echo 'alert ("Campo Telefone não pode estar vazio!")';
-                    echo '</script>';
-                }
+                    echo '</script>';}
+                    }else{
+                    echo '<script language="javascript">';
+                    echo"document.location.href='http://localhost/mudanca.php?idn=$ide&&tp=pf';";
+                    echo 'alert ("Campo RG não pode estar vazio!")';
+                    echo '</script>';}
+                    }else{
+                    echo '<script language="javascript">';
+                    echo"document.location.href='http://localhost/mudanca.php?idn=$ide&&tp=pf';";
+                    echo 'alert ("Campo CPF não pode estar vazio!")';
+                    echo '</script>';}
+                    }else{
+                    echo '<script language="javascript">';
+                    echo"document.location.href='http://localhost/mudanca.php?idn=$ide&&tp=pf';";
+                    echo 'alert ("Campo Nome não pode estar vazio!")';
+                    echo '</script>';}
         }
         else if($_GET['tp']=="pj"|| $_POST['tiPes']=="pj"){
              if($_POST['newtel']!=""){
@@ -34,6 +55,8 @@ require("bancoDados.php");
                     if($_POST['razaosocial']!=""){
                         if($_POST['empresa']!=""){
                             if($_POST['newcnpj']!=""){
+                                $telfone=$_POST['newtel'];
+                                $email=$_POST['newemail'];
                                 $ver= bancoDados::validaMudanca("pj",$ide,$_POST['newtel'],$_POST['newemail'],$_POST['razaosocial'],$_POST['empresa'],$_POST['newcnpj']);
                             }else{
                                 echo '<script language="javascript">';
@@ -63,7 +86,8 @@ require("bancoDados.php");
                 }
         }
                if($ver==true){    /*ativa mudança*/
-               bancoDados::mudaPessoa($ide,$_POST['razaosocial'],$_POST['empresa'],$_POST['newtel'],$_POST['newemail'],$_POST['newec'],$_POST['newcnpj']);
+                   
+               bancoDados::mudaPessoa($ide,$_POST['razaosocial'],$_POST['empresa'],$telfone,$email,$_POST['newec'],$_POST['newcnpj'],$_POST['nome'],$_POST['cpf'],$_POST['rg']);
               header("Location: http://localhost/tela2.php");
                }
              
@@ -75,7 +99,11 @@ require("bancoDados.php");
      $t="p";
      $idn=$pessoa['ID'];
      
-    }}
+    }
+       
+    
+     }
+    
 
     
 ?>
@@ -91,16 +119,33 @@ require("bancoDados.php");
     <input type="hidden" value="<?php echo $_GET['tp']?>"  name="tiPes">
     <body>
             
-            <table>
+            <table id="pessoaf">
+                <tr>
+               <td>Nome:</td>
+               <td> <input type = "text" name = "nome" id="nome" value="<?php  echo $pessoa['NOME'];?>">
+                  
+               </td>
+                </tr>
+                <tr>
+                <tr>
+                    <td>CPF:</td> 
+                    <td> <input type = 'text' name = 'cpf'  id = 'cpf' value="<?php  echo $pessoa['CPF'];?>" >
+                    </td>
+                </tr>
+                <tr> 
+                    <td>RG:</td> <td> 
+                    <input type = 'text' name = 'rg' id='rg' value="<?php  echo $pessoa['RG'];?>" > 
+                    </td> 
+                </tr>
                 <tr>
                     <td>Telefone:</td> 
-                    <td> <input type = 'text' name = 'newtel' id ='newtel' value="<?php  echo $pessoa['TELEFONE'];?>">
+                    <td> <input type = 'text' name = 'newtelf' id ='newtel' value="<?php  echo $pessoa['TELEFONE'];?>">
                     <span class = 'error' </td>
                 </tr>
                
                 <tr>
                     <td>Email:</td> <td> 
-                    <input type = 'text' name = 'newemail'  value="<?php echo $pessoa['EMAIL'];?>" > 
+                    <input type = 'text' name = 'newemailf'  value="<?php echo $pessoa['EMAIL'];?>" > 
                     <span class = 'error'</td> 
                 </tr>
                  
@@ -136,6 +181,17 @@ require("bancoDados.php");
             ?>
             </table>
         <table id="pessoaj">
+                        <tr>
+                            <td>Telefone:</td> 
+                            <td> <input type = 'text' name = 'newtel' id ='newtel' value="<?php  echo $pessoa['TELEFONE'];?>">
+                            <span class = 'error' </td>
+                        </tr>
+
+                        <tr>
+                            <td>Email:</td> <td> 
+                            <input type = 'text' name = 'newemail'  value="<?php echo $pessoa['EMAIL'];?>" > 
+                            <span class = 'error'</td> 
+                        </tr>
                             <tr> 
                               <td>CNPJ:</td> 
                                 <td> <input type = 'text' name = 'newcnpj' id='cnpj' value='<?php echo $pessoa['CNPJ'];?>' > 
@@ -169,19 +225,24 @@ require("bancoDados.php");
         jQuery(function($){
             
            $("#newtel").mask("(999) 99999-9999");
+           $("#cnpj").mask("99.999.999/9999-99"); 
+            $("#rg").mask("9.999.999");
+           $("#cpf").mask("999.999.999.99"); 
            
         });
  
 </script>
 <?php
       if($_GET['tp']=="pj"||$_POST['tiPes']=="pj"){
-        
+          error_log("epa!");
         echo'<script type="text/javascript">';
-	echo 'document.getElementById("pessoaj").style.display = "block"';
+	
+        echo 'document.getElementById("pessoaf").style.display = "none"';
         echo'</script>';
      }
      else{echo'<script type="text/javascript">';
 	echo 'document.getElementById("pessoaj").style.display = "none"';
+        
         echo'</script>';
      }
       ?>

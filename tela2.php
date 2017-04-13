@@ -24,7 +24,7 @@
                 echo "</table>";
             }
             else{
-                bancoDados::buscaPessoa($_POST['namep'], $_POST['idp'], $_POST['telefone'],$_POST['email']);
+                bancoDados::buscaPessoa($_POST['namep'], $_POST['idp'], $_POST['telefone'],$_POST['email'],$_POST["pessoa"]);
                 echo "<table >";
                 echo '<form action="tela2.php" method="post">';
                 echo "<tr><td><input type='submit' value='Mostrar Pessoas' ></td></tr>";
@@ -111,8 +111,9 @@
                 $cpf = $array[$i]['CPF'];
                 $rg = $array[$i]['RG'];
                 $cnpj = $array[$i]['CNPJ'];
-                if(isset($cnpj)){$tpes="pj";}
+                if(isset($cnpj)){$tpes="pj";$ec=NULL;}
                 else{$tpes="pf";}
+                
            echo "<tr><td><input type='checkbox' id='box' name='boxpes[]' value='$id '></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=$tpes'>$id</a></td><td>$pnome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
           
         }  
@@ -173,6 +174,9 @@
                   <td>ID:</td> 
                     <td> <input type = "text" name = "idu">
                 </tr>
+               
+                           
+             
                 <tr>
                 <td>
                   <input type = "submit" name = "buscauser" value = "Buscar" > 
@@ -200,6 +204,12 @@
                     <td>Email:</td>
                     <td><input type = "text" name = "email">
                 </tr>
+                <tr><td>Tipo de Pessoa:</td>
+                       <td><select name='pessoa' id='pessoa'  >
+                       <option>Selecione</option>
+                       <option  value = 'pf'>Pessoa Física</option>
+                       <option  value = 'pj'>Pessoa Jurídica</option>
+                       </td></tr></select>
                 <tr>
                 <td>
                   <input type = "submit" name = "buscapes" value = "Buscar" > 

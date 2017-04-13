@@ -50,11 +50,11 @@
             }return $var;
           }
           /*Valida RG/CPF */
-        function validaDoc($vCpf,$vRg){
+        function validaDoc($vCpf,$vRg,$vId=0,$vAcao){
               $conn= bancoDados::fazConexao();
              error_log('executoudoc');
             try{ 
-                $num_rows3 ="SELECT RG,CPF FROM dbo.PESSOA_FISICA";
+                $num_rows3 ="SELECT RG,CPF,ID FROM dbo.PESSOA_FISICA";
                 $stmt3 = $conn->prepare($num_rows3); 
                 $stmt3->execute(); 
                 $arr3 = $stmt3->fetchAll(PDO::FETCH_ASSOC);
@@ -63,24 +63,38 @@
                 for($i=0;$i<count($arr3);$i++){
                     $cpf = $arr3[$i]['CPF'];
                     $rg = $arr3[$i]['RG'];
-                    error_log($cpf);
+                    $id= $arr3[$i]['ID'];
+                    error_log($vRg);
                     error_log($rg);
-                   if($cpf==$vCpf){$ver7 = "7";}
-                   else if($rg==$vRg){$ver6 = "6";}
+                   if($cpf==$vCpf && $id != $vId){$ver7 = "7";}
+                   else if($rg==$vRg && $id != $vId){$ver6 = "6";}
                    }
-                   if($ver7){
+                   
+                     if($ver7){error_log("entrou ver7");
+                         if($vAcao=="insere"){error_log("ins");
                         echo '<script language="javascript">';
                         echo 'alert("*CPF ja cadastrado")';
-                        echo '</script>';
-                        }
-                    else if($ver6){
-                        echo '<script language="javascript">';
-                        echo 'alert("*RG ja cadastrado")';
+                         echo '</script>';}
+                         else{error_log("mud");
+                             echo '<script language="javascript">';
+                        echo"document.location.href='http://localhost/mudanca.php?idn=$vId&&tp=pf';";
+                        echo 'alert("*CPF ja cadastrado")';
                         echo '</script>';}
+                        }
+                    else if($ver6){  error_log("entrou ver6");
+                     if($vAcao=="insere"){error_log("ins");
+                            echo '<script language="javascript">';
+                            echo 'alert("*CPF ja cadastrado")';
+                            echo '</script>';}
+                         else{error_log("mud");
+                            echo '<script language="javascript">';
+                            echo"document.location.href='http://localhost/mudanca.php?idn=$vId&&tp=pf';";
+                            echo 'alert("*RG ja cadastrado")';
+                            echo '</script>';}}
                      if($ver7||$ver6){
                         $var=false;
                     }else{
-                        error_log("entrou nesse elsedoc");
+                        error_log("entrou nesse else");
                         $var=true;}
             
           }catch(Exception $e){
@@ -162,7 +176,7 @@
             }
         }
         /*Insere dados de Pessoa*/    
-        function inserePessoa(){
+        function inserePessoa($tel,$email){
              $conn= bancoDados::fazConexao();
             try{ 
                     $num_rows = "SELECT ISNULL(MAX(ID),0)+1 AS PROXID FROM PESSOA";
@@ -171,10 +185,10 @@
                     $cadastro=$insert->fetchAll(PDO::FETCH_ASSOC);
                     $id=$cadastro[0]["PROXID"];
 
-                    $tsql = "INSERT INTO dbo.PESSOA(ID,NOME,TELEFONE,EMAIL,ID_ESTADO_CIVIL) 
-                    VALUES (?,?,?,?,?)";  
-                    $params = array($id,$_POST['nome'], 
-                    $_POST['telefone'],$_POST['email'],$_POST['ec']);  
+                    $tsql = "INSERT INTO dbo.PESSOA(ID,TELEFONE,EMAIL,TIPO) 
+                    VALUES (?,?,?,?)";  
+                    $params = array($id, 
+                    $tel,$email,$_POST["pessoa"]);  
                     $insertCadastro=$conn->prepare($tsql);  
                     $insertCadastro->execute($params);
                 if($_POST['cpf']=="" || $_POST['rg']==""){
@@ -185,11 +199,10 @@
                     $rg=$_POST['rg'];
                 }
                     $tsql3 = "INSERT INTO dbo.PESSOA_FISICA(ID,RG,   
-                      CPF)   
-                    VALUES (?,?,?)";  
+                      CPF,NOME,ID_ESTADO_CIVIL)   
+                    VALUES (?,?,?,?,?)";  
                     $params3 = array($id,
-                    $rg,    
-                    $cpf);  
+                    $rg,$cpf,$_POST['nome'],$_POST['ec']);  
                     $insertCadastro3=$conn->prepare($tsql3);  
                 $insertCadastro3->execute($params3);
                 if($_POST['cnpj']==""||$_POST['empresa']==""||$_POST['razaosocial']==""){
@@ -219,7 +232,7 @@
            
         }
         /*Faz Mudança de dados de Pessoa*/
-        function mudaPessoa($idn,$newrs=0,$newempresa=0,$newtelefone=0,$newemail=0,$ec,$newcnpj=0) {
+        function mudaPessoa($idn,$newrs=0,$newempresa=0,$newtelefone=0,$newemail=0,$ec,$newcnpj=0,$newNome=0,$newCpf=0,$newRg=0) {
              $conn= bancoDados::fazConexao();
              error_log('veio no muda');
             try{ 
@@ -246,7 +259,22 @@
                     $insert->execute();
                 }
                 if($ec){
-                    $num_rows ="UPDATE dbo.PESSOA SET ID_ESTADO_CIVIL='".$ec."' WHERE ID=".$idn;
+                    $num_rows ="UPDATE dbo.PESSOA_FISICA SET ID_ESTADO_CIVIL='".$ec."' WHERE ID=".$idn;
+                    $insert=$conn->prepare($num_rows);  
+                    $insert->execute();
+                }
+                if($newNome){
+                    $num_rows ="UPDATE dbo.PESSOA_FISICA SET NOME='".$newNome."' WHERE ID=".$idn;
+                    $insert=$conn->prepare($num_rows);  
+                    $insert->execute();
+                }
+                if($newCpf){
+                    $num_rows ="UPDATE dbo.PESSOA_FISICA SET CPF='".$newCpf."' WHERE ID=".$idn;
+                    $insert=$conn->prepare($num_rows);  
+                    $insert->execute();
+                }
+                if($newRg){
+                    $num_rows ="UPDATE dbo.PESSOA_FISICA SET RG='".$newRg."' WHERE ID=".$idn;
                     $insert=$conn->prepare($num_rows);  
                     $insert->execute();
                 }
@@ -264,7 +292,7 @@
             
            }
          /*Faz Mudança de dados de Usuario*/
-        function mudaUser($idn,$newl,$news){
+        function mudaUser($idn,$newl,$news,$newn){
                $conn= bancoDados::fazConexao();
               try{
                   error_log($idn);
@@ -280,7 +308,14 @@
                     $num_rows ="UPDATE dbo.USUARIO SET SENHA='".$news."' WHERE ID =".$idn;
                     $insert=$conn->prepare($num_rows);  
                     $insert->execute();
-              }}
+              }
+               if(isset($newn)){
+                    error_log('entrou nome');
+                    $num_rows ="UPDATE dbo.USUARIO SET NOME='".$newn."' WHERE ID =".$idn;
+                    $insert=$conn->prepare($num_rows);  
+                    $insert->execute();
+              }
+                }
             catch (Exception $e)  
                    {die( print_r( $e->getMessage() ) );  
                      }
@@ -295,7 +330,7 @@
             $conn= bancoDados::fazConexao();
            
             try {
-            $num_rows="SELECT P.ID,PJ.RAZAO_SOCIAL, PJ.NOME_FANTASIA,P.TELEFONE,P.EMAIL,P.NOME,P.ID_ESTADO_CIVIL,EC.DESCRICAO,PF.RG,PF.CPF,PJ.CNPJ FROM PESSOA P LEFT JOIN ESTADO_CIVIL EC ON P.ID_ESTADO_CIVIL = EC.ID LEFT JOIN  PESSOA_FISICA PF ON P.ID=PF.ID LEFT JOIN PESSOA_JURIDICA PJ ON P.ID=PJ.ID".($id ? " WHERE P.ID=".$id :"");
+            $num_rows="SELECT P.ID,PJ.RAZAO_SOCIAL, PJ.NOME_FANTASIA,P.TELEFONE,P.EMAIL,PF.NOME,PF.ID_ESTADO_CIVIL,EC.DESCRICAO,PF.RG,PF.CPF,PJ.CNPJ FROM PESSOA_FISICA PF LEFT JOIN ESTADO_CIVIL EC ON PF.ID_ESTADO_CIVIL = EC.ID LEFT JOIN  PESSOA P ON P.ID=PF.ID LEFT JOIN PESSOA_JURIDICA PJ ON P.ID=PJ.ID".($id ? " WHERE P.ID=".$id :"");
             $stmt=$conn->prepare($num_rows); 
             $stmt->execute();
             $arr=$stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -365,29 +400,36 @@
            
         }
         /*Filtro de pessoa*/
-        function buscaPessoa( $varnomep=0, $varid=0, $vartel=0,$varemail=0) {
+        function buscaPessoa( $varnomep=0, $varid=0, $vartel=0,$varemail=0,$tipo) {
                $conn= bancoDados::fazConexao();
                echo "<table  border='3'><tr><th></th><th>ID</th><th>Nome</th><th>Telefone</th><th>EMAIL</th><th>Estado Civil</th><th>Nome fantasia</th><th>Razao Social</th><th>CPF</th><th>RG</th><th>CNPJ</th></tr>";
                 try{
                   
-                if($varid){
+                if($varid){error_log("id");
                    $busca= bancoDados::imprimi($varid);
                     $id=$varid;
                     $nome = $busca[0]['NOME'];
-                    if($nome!=""){
-                      
-                    $ec=$busca[0]['DESCRICAO'];
                     $telefone = $busca[0]['TELEFONE'];
-                    $empresa = $busca[0]['NOME_FANTASIA'];
-                    $razao = $busca[0]['RAZAO_SOCIAL'];
-                    $email = $busca[0]['EMAIL'];
-                    $cpf = $busca[0]['CPF'];
-                    $rg = $busca[0]['RG'];
-                    $cnpj = $busca[0]['CNPJ'];
-                    if($cnpj==""){
-                        echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pf'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
-                    }else{
+                    if($telefone!=""){
+                      if($nome==""){
+                        $empresa = $busca[0]['NOME_FANTASIA'];
+                        $razao = $busca[0]['RAZAO_SOCIAL'];
+                        $email = $busca[0]['EMAIL'];
+                        $cpf = $busca[0]['CPF'];
+                        $rg = $busca[0]['RG'];
+                        $cnpj = $busca[0]['CNPJ'];
+                          $ec=null;
                       echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pj'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";  
+                      }else{
+                        $ec=$busca[0]['DESCRICAO'];
+                        $telefone = $busca[0]['TELEFONE'];
+                        $empresa = $busca[0]['NOME_FANTASIA'];
+                        $razao = $busca[0]['RAZAO_SOCIAL'];
+                        $email = $busca[0]['EMAIL'];
+                        $cpf = $busca[0]['CPF'];
+                        $rg = $busca[0]['RG'];
+                        $cnpj = $busca[0]['CNPJ'];
+                        echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pf'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
                     }
                      
                     }
@@ -401,7 +443,7 @@
                 }
                
                 else if($vartel){
-                    
+                    error_log("tel");
                     $num_rows ="SELECT ID FROM dbo.PESSOA WHERE TELEFONE='".$vartel."'";
                     $stmt = $conn->prepare($num_rows); 
                     $stmt->execute(); 
@@ -418,10 +460,10 @@
                     $cpf = $busca[0]['CPF'];
                     $rg = $busca[0]['RG'];
                     $cnpj = $busca[0]['CNPJ'];
-                    if($cnpj==""){
-                        echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pf'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
+                    if($cnpj!=""){$ec=null;
+                        echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pj'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
                     }else{
-                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pj'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";  
+                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pf'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";  
                     }
                     }
                     else{
@@ -431,7 +473,7 @@
                         echo '</script>';
                     } 
                 }
-                else if($varemail){
+                else if($varemail){error_log("email");
                     $num_rows ="SELECT ID FROM dbo.PESSOA WHERE EMAIL='".$varemail."'";
                     $stmt = $conn->prepare($num_rows); 
                     $stmt->execute(); 
@@ -448,10 +490,10 @@
                     $cpf = $busca[0]['CPF'];
                     $rg = $busca[0]['RG'];
                     $cnpj = $busca[0]['CNPJ'];
-                    if($cnpj==""){
-                        echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pf'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
+                    if($cnpj!=""){$ec=null;
+                        echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pj'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
                     }else{
-                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pj'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";  
+                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pf'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";  
                     }
                     }
                     else{
@@ -461,8 +503,8 @@
                         echo '</script>';
                     } 
                 }
-                else{
-                    $num_rows ="SELECT ID FROM dbo.PESSOA WHERE NOME='".$varnomep."'";
+                else if($varnomep){error_log("nome");
+                    $num_rows ="SELECT ID FROM dbo.PESSOA_FISICA WHERE NOME='".$varnomep."'";
                     $stmt = $conn->prepare($num_rows); 
                     $stmt->execute(); 
                     $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -482,10 +524,10 @@
                     $cpf = $busca[$i]['CPF'];
                     $rg = $busca[$i]['RG'];
                     $cnpj = $busca[$i]['CNPJ'];
-                     if($cnpj==""){
-                        echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pf'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
+                     if($cnpj!=""){$ec=null;
+                        echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pj'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
                     }else{
-                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pj'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";  
+                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pf'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";  
                     }
                     }}
                      
@@ -496,7 +538,43 @@
                         echo '</script>';
                     }
                   
+                    }else if($tipo=="pf" || $tipo=="pj"){error_log("tipo");
+                    $num_rows ="SELECT ID FROM dbo.PESSOA WHERE TIPO='".$tipo."'";
+                    $stmt = $conn->prepare($num_rows); 
+                    $stmt->execute(); 
+                    $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    error_log(print_r($arr,true));
+                    if(count($arr)>0){
+                        
+                    for($i=0;$i<count($arr);$i++){
+                    $id = $arr[$i]['ID'];
+                     
+                    $busca= bancoDados::imprimi($id);
+                    error_log(print_r($busca,true));
+                    $nome =$busca[0]['NOME'];
+                    $ec=$busca[0]['DESCRICAO'];
+                    $telefone = $busca[0]['TELEFONE'];
+                    $empresa = $busca[0]['NOME_FANTASIA'];
+                    $razao = $busca[0]['RAZAO_SOCIAL'];
+                    $email =  $busca[0]['EMAIL'];
+                    $cpf = $busca[0]['CPF'];
+                    $rg = $busca[0]['RG'];
+                    $cnpj = $busca[0]['CNPJ'];
+                     if($cnpj!=""){$ec=null;
+                        echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pj'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";
+                    }else{
+                      echo "<tr><td><input type='checkbox' id='boxpes' name='boxpes' value=$id></td><td><a href='http://localhost/mudanca.php?idn=$id&&tp=pf'>$id</a></td><td>$nome</td><td>$telefone</td><td>$email</td><td>$ec</td><td>$empresa</td><td>$razao</td><td> $cpf </td><td> $rg </td><td>$cnpj</td></tr>";  
                     }
+                    }}
+                     
+                    }
+                  
+                    
+                    else{error_log("ain");
+                        echo '<script language="javascript">';
+                        echo"document.location.href='http://localhost/tela2.php';";
+                        echo 'alert("*Filto de busca vazio!")';
+                        echo '</script>';}
                 echo '</table>';
             }
                catch(Exception $e){
@@ -557,7 +635,7 @@
                         echo 'alert("*Usuário Inexistente")';
                         echo '</script>';
                 }}
-                else {
+                else if ($idu){
                     $arr=  bancoDados::imprimiUser($idu);
                     $id =$idu;
                     $nome = $arr[0]['NOME'];
@@ -571,6 +649,12 @@
                         echo 'alert("*Usuário Inexistente")';
                         echo '</script>'; 
                 }}
+                else{
+                    echo '<script language="javascript">';
+                        echo"document.location.href='http://localhost/tela2.php?type=us';";
+                        echo 'alert("*Filto de busca vazio!")';
+                        echo '</script>'; 
+                }
              } catch(Exception $e){
                    die( print_r( $e->getMessage() ) );   
                 }
@@ -578,7 +662,7 @@
             }
 
              /*Faz Validacao de Pessoa na Mudanca*/
-        function validaMudanca($vTipo,$vId,$vTel,$vEmail,$newrs=0,$newempresa=0,$newcnpj=0){
+        function validaMudanca($vTipo,$vId,$vTel,$vEmail,$newrs=0,$newempresa=0,$newcnpj=0,$nNome,$nCpf,$nRg){
             $conn= bancoDados::fazConexao();
             try{ 
                 $num_rows2 ="SELECT TELEFONE,EMAIL,ID FROM dbo.PESSOA";

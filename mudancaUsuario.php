@@ -12,12 +12,12 @@ require("bancoDados.php");
     if(isset($_POST['contr'])){
         $ide=$_POST["idEntidade"];
         
-            if($_POST['newlogin']!="" && $_POST['newsenha']!=""){
+            if($_POST['newlogin']!="" && $_POST['newsenha']!="" && $_POST['newnome']!=""){
                 
              $ver= bancoDados::validaUsuario($ide,$_POST['newlogin']);
                if($ver==true){/*ativa mudança*/
                    error_log("VERIFICOU");
-                   bancoDados::mudaUser($ide,$_POST['newlogin'],$_POST['newsenha']);
+                   bancoDados::mudaUser($ide,$_POST['newlogin'],$_POST['newsenha'],$_POST['newnome']);
                     header("Location: http://localhost/tela2.php?type=us");
                }
                else {header("Location: http://localhost/mudancaUsuario.php?idn=$ide&erro=err");}
@@ -65,6 +65,11 @@ if(isset($_GET["erro"])){
     <input type="hidden" value="<?php echo $_GET['idn']?>"  name="idEntidade">
     <body>
              <table id="mudauser" name="mudauser" value="1">
+                 <tr> 
+                  <td>Nome:</td> 
+                    <td> <input type = 'text' name = 'newnome' value='<?php echo $usuario['NOME'];?>' > 
+                    </td> 
+                </tr>
                 <tr> 
                   <td>Login:</td> 
                     <td> <input type = 'text' name = 'newlogin' value='<?php echo $usuario['LOGIN'];?>' > 
